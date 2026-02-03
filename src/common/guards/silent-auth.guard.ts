@@ -1,7 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
-import { setRefreshCookie } from '../utils/cookies'
 import { AuthService } from '../../auth/auth.service'
-import { verifyAccess } from '../../auth/access-jwt'
+import { signAccess, verifyAccess, verifyAccessIgnoreExp } from '../../auth/access-jwt'
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator'
 import { Reflector } from '@nestjs/core'
 
@@ -17,47 +16,47 @@ export class SilentAuthGuard implements CanActivate {
 			context.getHandler(),
 			context.getClass()
 		])
-
 		if (isPublic) return true
 
 		const req = context.switchToHttp().getRequest()
 		const res = context.switchToHttp().getResponse()
 
 		const authHeader: string | undefined = req.headers['authorization']
-
 		const access = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined
 
 		if (access) {
 			try {
 				const payload = verifyAccess(access)
-
-				req.user = {
-					sub: payload.sub,
-					sid: payload.sid,
-					role: payload.role
-				}
-
+				req.user = { sub: payload.sub, sid: payload.sid, role: payload.role }
 				return true
 			} catch {}
 		}
 
 		const refreshSecret = req.cookies?.refresh
-		if (!refreshSecret || !access) {
-			throw new UnauthorizedException()
+		if (!refreshSecret) throw new UnauthorizedException()
+
+		let sid: string | undefined
+
+		if (access) {
+			const payload = verifyAccessIgnoreExp(access)
+			sid = payload.sid
+		} else {
+			sid = req.cookies?.sid
 		}
 
-		const rotated = await this.authService.rotateSilently(access, refreshSecret)
+		if (!sid) throw new UnauthorizedException()
 
-		setRefreshCookie(res, rotated.newRefreshSecret)
+		const session = await this.authService.validateRefreshBySidAndSlide(sid, refreshSecret)
 
-		res.setHeader('x-access-token', rotated.newAccess)
+		const newAccess = signAccess({
+			sub: session.userId,
+			sid: session.id,
+			role: session.user.role
+		})
 
-		req.user = {
-			sub: rotated.userId,
-			sid: rotated.sid,
-			role: rotated.role
-		}
+		res.setHeader('x-access-token', newAccess)
 
+		req.user = { sub: session.userId, sid: session.id, role: session.user.role }
 		return true
 	}
 }

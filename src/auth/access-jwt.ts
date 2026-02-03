@@ -8,7 +8,7 @@ export interface AccessTokenPayload {
 }
 
 export function signAccess(payload: { sub: string; sid: string; role: string }) {
-	return jwt.sign(payload, process.env.ACCESS_SECRET as string, { expiresIn: '5m' })
+	return jwt.sign(payload, process.env.ACCESS_SECRET as string, { expiresIn: '30m' })
 }
 
 export function verifyAccess(token: string): AccessTokenPayload {

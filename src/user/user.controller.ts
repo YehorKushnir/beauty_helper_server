@@ -26,6 +26,7 @@ export class UserController {
 
 		return {
 			id: dbUser.id,
+			name: dbUser.name,
 			email: dbUser.email,
 			role: dbUser.role
 		}

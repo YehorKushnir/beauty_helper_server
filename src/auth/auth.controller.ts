@@ -10,7 +10,7 @@ import {
 import type { Request, Response } from 'express'
 
 import { AuthService } from './auth.service'
-import { clearRefreshCookie, setRefreshCookie } from '../common/utils/cookies'
+import { clearAuthCookies, setRefreshCookie, setSidCookie } from '../common/utils/cookies'
 import type { RequestUser } from '../common/decorators/current-user.decorator'
 import { CurrentUser } from '../common/decorators/current-user.decorator'
 import { RegisterDto } from './dto/register'
@@ -39,7 +39,7 @@ export class AuthController {
 			throw new BadRequestException('Email already exists')
 		}
 
-		const user = await this.usersService.createWithPassword(dto.email, dto.password)
+		const user = await this.usersService.createWithPassword(dto.name, dto.email, dto.password)
 
 		const parser = new UAParser(req.headers['user-agent'])
 		const deviceName = `${parser.getBrowser().name} on ${parser.getOS().name}`
@@ -50,14 +50,16 @@ export class AuthController {
 			ip: req.ip
 		}
 
-		const { access, refreshSecret } = await this.authService.login(user, meta)
+		const { sid, access, refreshSecret } = await this.authService.login(user, meta)
 
 		setRefreshCookie(res, refreshSecret)
+		setSidCookie(res, sid)
 
 		return {
 			access,
 			user: {
 				id: user.id,
+				name: user.name,
 				email: user.email,
 				role: user.role
 			}
@@ -87,14 +89,16 @@ export class AuthController {
 			ip: req.ip
 		}
 
-		const { access, refreshSecret } = await this.authService.login(user, meta)
+		const { sid, access, refreshSecret } = await this.authService.login(user, meta)
 
 		setRefreshCookie(res, refreshSecret)
+		setSidCookie(res, sid)
 
 		return {
 			access,
 			user: {
 				id: user.id,
+				name: user.name,
 				email: user.email,
 				role: user.role
 			}
@@ -104,7 +108,7 @@ export class AuthController {
 	@Post('logout')
 	async logout(@CurrentUser() user: RequestUser, @Res({ passthrough: true }) res: Response) {
 		await this.authService.logout(user.sub, user.sid)
-		clearRefreshCookie(res)
+		clearAuthCookies(res)
 
 		return { ok: true }
 	}
@@ -112,7 +116,7 @@ export class AuthController {
 	@Post('logout-all')
 	async logoutAll(@CurrentUser() user: RequestUser, @Res({ passthrough: true }) res: Response) {
 		await this.authService.revokeAll(user.sub)
-		clearRefreshCookie(res)
+		clearAuthCookies(res)
 
 		return { ok: true }
 	}

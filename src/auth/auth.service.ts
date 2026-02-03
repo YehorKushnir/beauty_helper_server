@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import * as argon2 from 'argon2'
 import * as crypto from 'crypto'
-import { signAccess, verifyAccessIgnoreExp } from './access-jwt'
+import { signAccess } from './access-jwt'
 import { generateRefreshSecret } from '../common/utils/refresh-secret'
 
 const REFRESH_DAYS = 30
@@ -49,6 +49,7 @@ export class AuthService {
 		})
 
 		return {
+			sid,
 			access,
 			refreshSecret
 		}
@@ -79,114 +80,32 @@ export class AuthService {
 		})
 	}
 
-	async rotateSilently(expiredAccessToken: string, refreshSecret: string) {
-		const payload = verifyAccessIgnoreExp(expiredAccessToken)
+	async validateRefreshBySidAndSlide(sid: string, refreshSecret: string) {
+		const session = await this.prisma.session.findUnique({
+			where: { id: sid },
+			include: { user: true }
+		})
 
-		const userId = payload.sub
-		const sid = payload.sid
-		const role = payload.role
+		if (!session || session.status !== 'active') {
+			throw new UnauthorizedException()
+		}
 
-		return this.prisma.$transaction(async (tx) => {
-			const rows = await tx.$queryRawUnsafe<any[]>(
-				`SELECT *
-				 FROM "Session"
-				 WHERE id = $1
-					 FOR UPDATE`,
-				sid
-			)
+		const ok = await argon2.verify(session.refreshSecretHash, refreshSecret)
+		if (!ok) throw new UnauthorizedException()
 
-			const session = rows[0]
-			if (!session) {
-				throw new UnauthorizedException()
-			}
+		if (session.refreshExpiresAt < new Date()) {
+			throw new UnauthorizedException()
+		}
 
-			if (session.userId !== userId) {
-				throw new UnauthorizedException()
-			}
-
-			if (session.status === 'revoked') {
-				throw new UnauthorizedException()
-			}
-
-			if (session.status === 'rotated') {
-				await tx.session.updateMany({
-					where: {
-						userId,
-						status: 'active'
-					},
-					data: {
-						status: 'revoked'
-					}
-				})
-
-				throw new UnauthorizedException()
-			}
-
-			if (session.refreshExpiresAt < new Date()) {
-				await tx.session.update({
-					where: { id: sid },
-					data: { status: 'revoked' }
-				})
-
-				throw new UnauthorizedException()
-			}
-
-			const ok = await argon2.verify(session.refreshSecretHash, refreshSecret)
-
-			if (!ok) {
-				await tx.session.updateMany({
-					where: {
-						userId,
-						status: 'active'
-					},
-					data: {
-						status: 'revoked'
-					}
-				})
-
-				throw new UnauthorizedException()
-			}
-
-			const newSid = crypto.randomUUID()
-			const newSecret = generateRefreshSecret()
-			const newHash = await argon2.hash(newSecret)
-
-			await tx.session.create({
-				data: {
-					id: newSid,
-					userId,
-					refreshSecretHash: newHash,
-					refreshExpiresAt: addDays(REFRESH_DAYS),
-					status: 'active',
-					ip: session.ip,
-					userAgent: session.userAgent,
-					deviceName: session.deviceName
-				}
-			})
-
-			await tx.session.update({
-				where: { id: sid },
-				data: {
-					status: 'rotated',
-					replacedBySessionId: newSid,
-					lastUsedAt: new Date()
-				}
-			})
-
-			const newAccess = signAccess({
-				sub: userId,
-				sid: newSid,
-				role
-			})
-
-			return {
-				newAccess,
-				newRefreshSecret: newSecret,
-				userId,
-				sid: newSid,
-				role
+		await this.prisma.session.update({
+			where: { id: sid },
+			data: {
+				refreshExpiresAt: addDays(30),
+				lastUsedAt: new Date()
 			}
 		})
+
+		return session
 	}
 
 	async getActiveSessions(userId: string) {
