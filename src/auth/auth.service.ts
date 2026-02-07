@@ -55,6 +55,46 @@ export class AuthService {
 		}
 	}
 
+	async checkAuth(
+		user: { id: string; role: string },
+		meta: {
+			userAgent?: string
+			ip?: string
+			deviceName?: string
+		}
+	) {
+		const sid = crypto.randomUUID()
+
+		const refreshSecret = generateRefreshSecret()
+		const refreshHash = await argon2.hash(refreshSecret)
+
+		await this.prisma.session.create({
+			data: {
+				id: sid,
+				userId: user.id,
+				refreshSecretHash: refreshHash,
+				refreshExpiresAt: addDays(REFRESH_DAYS),
+				status: 'active',
+				userAgent: meta.userAgent,
+				ip: meta.ip,
+				deviceName: meta.deviceName,
+				lastUsedAt: new Date()
+			}
+		})
+
+		const access = signAccess({
+			sub: user.id,
+			sid,
+			role: user.role
+		})
+
+		return {
+			sid,
+			access,
+			refreshSecret
+		}
+	}
+
 	async logout(userId: string, sid: string) {
 		await this.prisma.session.updateMany({
 			where: {

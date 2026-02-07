@@ -1,23 +1,16 @@
-import {
-	BadRequestException,
-	Body,
-	Controller,
-	Post,
-	Req,
-	Res,
-	UnauthorizedException
-} from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
 import type { Request, Response } from 'express'
 
 import { AuthService } from './auth.service'
 import { clearAuthCookies, setRefreshCookie, setSidCookie } from '../common/utils/cookies'
 import type { RequestUser } from '../common/decorators/current-user.decorator'
 import { CurrentUser } from '../common/decorators/current-user.decorator'
-import { RegisterDto } from './dto/register'
-import { LoginDto } from './dto/login'
+import { RegisterDto } from './dto/register.dto'
+import { LoginDto } from './dto/login.dto'
 import { UserService } from '../user/user.service'
 import { Public } from '../common/decorators/public.decorator'
 import { UAParser } from 'ua-parser-js'
+import { signAccess } from './access-jwt'
 
 @Controller('auth')
 export class AuthController {
@@ -61,7 +54,8 @@ export class AuthController {
 				id: user.id,
 				name: user.name,
 				email: user.email,
-				role: user.role
+				role: user.role,
+				avatarUrl: user.avatarUrl
 			}
 		}
 	}
@@ -76,7 +70,7 @@ export class AuthController {
 		const user = await this.usersService.validateCredentials(dto.email, dto.password)
 
 		if (!user) {
-			throw new UnauthorizedException('Invalid credentials')
+			throw new BadRequestException('Invalid email or password')
 		}
 
 		const parser = new UAParser(req.headers['user-agent'])
@@ -100,7 +94,30 @@ export class AuthController {
 				id: user.id,
 				name: user.name,
 				email: user.email,
-				role: user.role
+				role: user.role,
+				avatarUrl: user.avatarUrl
+			}
+		}
+	}
+
+	@Get('check-auth')
+	async checkAuth(@CurrentUser() user: RequestUser) {
+		const dbUser = await this.usersService.findById(user.sub)
+
+		const newAccess = signAccess({
+			sub: user.sub,
+			sid: user.sid,
+			role: user.role
+		})
+
+		return {
+			access: newAccess,
+			user: {
+				id: dbUser.id,
+				name: dbUser.name,
+				email: dbUser.email,
+				role: dbUser.role,
+				avatarUrl: dbUser.avatarUrl
 			}
 		}
 	}

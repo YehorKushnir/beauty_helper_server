@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
 import { AuthService } from '../../auth/auth.service'
-import { signAccess, verifyAccess, verifyAccessIgnoreExp } from '../../auth/access-jwt'
+import { signAccess, verifyAccess } from '../../auth/access-jwt'
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator'
 import { Reflector } from '@nestjs/core'
 
@@ -32,19 +32,10 @@ export class SilentAuthGuard implements CanActivate {
 			} catch {}
 		}
 
+		const sid = req.cookies?.sid
 		const refreshSecret = req.cookies?.refresh
-		if (!refreshSecret) throw new UnauthorizedException()
 
-		let sid: string | undefined
-
-		if (access) {
-			const payload = verifyAccessIgnoreExp(access)
-			sid = payload.sid
-		} else {
-			sid = req.cookies?.sid
-		}
-
-		if (!sid) throw new UnauthorizedException()
+		if (!sid || !refreshSecret) throw new UnauthorizedException()
 
 		const session = await this.authService.validateRefreshBySidAndSlide(sid, refreshSecret)
 

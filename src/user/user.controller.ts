@@ -1,7 +1,18 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	UploadedFile,
+	UseInterceptors
+} from '@nestjs/common'
 import { AuthService } from '../auth/auth.service'
 import { CurrentUser } from '../common/decorators/current-user.decorator'
 import { UserService } from './user.service'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { PasswordDto } from './dto/password.dto'
 
 interface RequestUser {
 	sub: string
@@ -20,28 +31,27 @@ export class UserController {
 	async me(@CurrentUser() user: RequestUser) {
 		const dbUser = await this.usersService.findById(user.sub)
 
-		if (!dbUser) {
-			throw new NotFoundException('User not found')
-		}
-
 		return {
 			id: dbUser.id,
 			name: dbUser.name,
 			email: dbUser.email,
-			role: dbUser.role
+			role: dbUser.role,
+			avatarUrl: dbUser.avatarUrl
 		}
 	}
 
 	@Patch('password')
-	async changePassword(
-		@CurrentUser() user: RequestUser,
-		@Body('newPassword') newPassword: string
-	) {
-		await this.usersService.changePassword(user.sub, newPassword)
+	async changePassword(@CurrentUser() user: RequestUser, @Body() dto: PasswordDto) {
+		await this.usersService.changePassword(user.sub, dto.password, dto.password_new)
 
 		await this.authService.revokeAll(user.sub)
 
 		return { ok: true }
+	}
+
+	@Patch('name')
+	async changeName(@CurrentUser() user: RequestUser, @Body() dto: { name: string }) {
+		return this.usersService.changeName(user.sub, dto.name)
 	}
 
 	@Get('sessions')
@@ -54,5 +64,17 @@ export class UserController {
 		await this.authService.revokeSession(user.sub, sessionId)
 
 		return { ok: true }
+	}
+
+	@Patch('avatar')
+	@UseInterceptors(
+		FileInterceptor('file', {
+			limits: {
+				fileSize: 10 * 1024 * 1024
+			}
+		})
+	)
+	uploadAvatar(@CurrentUser() user: RequestUser, @UploadedFile() file: Express.Multer.File) {
+		return this.usersService.processAvatar(user.sub, file)
 	}
 }

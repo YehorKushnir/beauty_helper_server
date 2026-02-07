@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common'
 import cookieParser from 'cookie-parser'
 import { SilentAuthGuard } from './common/guards/silent-auth.guard'
 import { RolesGuard } from './common/guards/roles.guard'
+import * as express from 'express'
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
@@ -23,6 +24,8 @@ async function bootstrap() {
 			whitelist: true
 		})
 	)
+
+	app.use('/uploads', express.static('uploads'))
 
 	await app.listen(process.env.PORT as string)
 }
