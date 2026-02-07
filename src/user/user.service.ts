@@ -94,21 +94,30 @@ export class UserService {
 		if (!file) throw new BadRequestException()
 
 		const type = await fileTypeFromBuffer(file.buffer)
-		if (!type?.mime.startsWith('image/')) throw BadRequestException
+		if (!type?.mime.startsWith('image/')) {
+			throw new BadRequestException('File is not an image')
+		}
+
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+			select: { avatarUrl: true }
+		})
 
 		const buffer = await sharp(file.buffer).resize(256, 256).webp({ quality: 80 }).toBuffer()
 
 		const key = `avatars/${crypto.randomUUID()}.webp`
 
-		const url = await this.storage.upload(key, buffer)
+		const newUrl = await this.storage.upload(key, buffer)
 
 		await this.prisma.user.update({
 			where: { id: userId },
-			data: {
-				avatarUrl: url
-			}
+			data: { avatarUrl: newUrl }
 		})
 
-		return url
+		if (user?.avatarUrl) {
+			await this.storage.deleteAvatar(user.avatarUrl).catch(() => {})
+		}
+
+		return newUrl
 	}
 }
