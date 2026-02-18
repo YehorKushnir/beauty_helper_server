@@ -3,7 +3,6 @@ import { Match } from '../../common/validators/match.validator'
 
 export class PasswordDto {
 	@IsString()
-	@IsNotEmpty({ message: 'Password is required' })
 	password: string
 
 	@IsString()

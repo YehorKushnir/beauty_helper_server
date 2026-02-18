@@ -64,7 +64,9 @@ export class UserService {
 
 	async changePassword(userId: string, password: string, newPassword: string) {
 		const user = await this.findById(userId)
-		const isPasswordCorrect = await argon2.verify(user.passwordHash, password)
+		const isPasswordCorrect = user.passwordHash
+			? await argon2.verify(user.passwordHash, password)
+			: true
 
 		if (!isPasswordCorrect) {
 			throw new BadRequestException({

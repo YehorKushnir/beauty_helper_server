@@ -44,8 +44,6 @@ export class UserController {
 	async changePassword(@CurrentUser() user: RequestUser, @Body() dto: PasswordDto) {
 		await this.usersService.changePassword(user.sub, dto.password, dto.password_new)
 
-		await this.authService.revokeAll(user.sub)
-
 		return { ok: true }
 	}
 

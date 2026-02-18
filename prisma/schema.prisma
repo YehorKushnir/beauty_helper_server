@@ -25,10 +25,41 @@ model User {
   name         String
   avatarUrl    String?
   email        String   @unique
-  passwordHash String
+  passwordHash String?
   role         UserRole @default(user)
 
-  sessions Session[]
+  sessions           Session[]
+  providers          AuthProvider[]
+  oauthConnectTokens OAuthConnectToken[]
+
+  createdAt DateTime @default(now())
+}
+
+model AuthProvider {
+  id             String   @id @default(uuid())
+  userId         String
+  provider       String
+  providerUserId String
+  emailAtLink    String?
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId], name: "provider_providerUserId")
+  @@unique([userId, provider], name: "user_provider_unique")
+}
+
+model OAuthConnectToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  provider  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, provider])
 }
 
 model Session {

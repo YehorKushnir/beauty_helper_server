@@ -52,6 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  AuthProvider: 'AuthProvider',
+  OAuthConnectToken: 'OAuthConnectToken',
   Session: 'Session'
 } as const
 
@@ -77,10 +79,35 @@ export const UserScalarFieldEnum = {
   avatarUrl: 'avatarUrl',
   email: 'email',
   passwordHash: 'passwordHash',
-  role: 'role'
+  role: 'role',
+  createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const AuthProviderScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  provider: 'provider',
+  providerUserId: 'providerUserId',
+  emailAtLink: 'emailAtLink',
+  createdAt: 'createdAt'
+} as const
+
+export type AuthProviderScalarFieldEnum = (typeof AuthProviderScalarFieldEnum)[keyof typeof AuthProviderScalarFieldEnum]
+
+
+export const OAuthConnectTokenScalarFieldEnum = {
+  id: 'id',
+  tokenHash: 'tokenHash',
+  userId: 'userId',
+  provider: 'provider',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OAuthConnectTokenScalarFieldEnum = (typeof OAuthConnectTokenScalarFieldEnum)[keyof typeof OAuthConnectTokenScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {
