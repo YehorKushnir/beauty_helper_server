@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   AuthProvider: 'AuthProvider',
   OAuthConnectToken: 'OAuthConnectToken',
-  Session: 'Session'
+  Session: 'Session',
+  Client: 'Client'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -126,6 +127,23 @@ export const SessionScalarFieldEnum = {
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const ClientScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone',
+  description: 'description',
+  archivedAt: 'archivedAt',
+  bannedAt: 'bannedAt',
+  bannedReason: 'bannedReason',
+  anonymizedAt: 'anonymizedAt',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -32,6 +32,8 @@ model User {
   providers          AuthProvider[]
   oauthConnectTokens OAuthConnectToken[]
 
+  client Client[]
+
   createdAt DateTime @default(now())
 }
 
@@ -82,4 +84,26 @@ model Session {
   updatedAt DateTime @updatedAt
 
   @@index([userId, status])
+}
+
+model Client {
+  id          String  @id @default(uuid())
+  name        String
+  phone       String?
+  description String?
+
+  archivedAt   DateTime?
+  bannedAt     DateTime?
+  bannedReason String?
+  anonymizedAt DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, phone])
+  @@index([userId, name])
+  @@index([userId, archivedAt])
 }

@@ -8,6 +8,7 @@ import {RolesGuard} from './common/guards/roles.guard'
 import {StorageModule} from './storage/storage.module';
 import {PassportModule} from "@nestjs/passport";
 import {GoogleStrategy} from "./auth/strategies/google.strategy";
+import { ClientModule } from './client/client.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import {GoogleStrategy} from "./auth/strategies/google.strategy";
 		PassportModule.register({
 			session: false, // 🔴 ВАЖНО: у тебя НЕ session-based auth
 		}),
+		ClientModule,
 	],
 	providers: [GoogleStrategy, SilentAuthGuard, RolesGuard]
 })

@@ -37,3 +37,8 @@ export type OAuthConnectToken = Prisma.OAuthConnectTokenModel
  * 
  */
 export type Session = Prisma.SessionModel
+/**
+ * Model Client
+ * 
+ */
+export type Client = Prisma.ClientModel
