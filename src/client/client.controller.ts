@@ -10,7 +10,6 @@ export class ClientController {
 
 	@Get('find-by-query')
 	async findByQuery(@CurrentUser() user: RequestUser, @Query() query: { search: string }) {
-		console.log(query)
 		return this.clientService.findByQuery(user.sub, query.search)
 	}
 

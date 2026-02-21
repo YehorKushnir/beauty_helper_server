@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { CreateUpdateClientDto } from './dto/create-update-client.dto'
 import { PrismaService } from '../prisma/prisma.service'
 import { GetClientsQueryDto } from './dto/get-client-query.dto'
-import { Prisma } from '../../prisma/generated/prisma/client'
+import { ClientStatus, Prisma } from '../../prisma/generated/prisma/client'
 
 @Injectable()
 export class ClientService {
@@ -12,6 +12,7 @@ export class ClientService {
 		return this.prisma.client.findMany({
 			where: {
 				userId,
+				status: 'ACTIVE',
 				...(query
 					? {
 							OR: [
@@ -38,12 +39,18 @@ export class ClientService {
 
 		const where = {
 			userId,
-			archivedAt: query.archived ? { not: null } : null,
+			status: query.status ?? { not: 'DELETED' as const },
 			...(query.search
 				? {
 						OR: [
 							{ name: { contains: query.search, mode: 'insensitive' as const } },
-							{ phone: { contains: query.search } }
+							{ phone: { contains: query.search } },
+							{
+								description: {
+									contains: query.search,
+									mode: 'insensitive' as const
+								}
+							}
 						]
 					}
 				: {})
@@ -60,8 +67,8 @@ export class ClientService {
 					name: true,
 					phone: true,
 					description: true,
-					archivedAt: true,
-					bannedAt: true,
+					status: true,
+					statusChangedAt: true,
 					createdAt: true
 				}
 			}),
@@ -97,63 +104,33 @@ export class ClientService {
 	}
 
 	async update(userId: string, id: string, dto: CreateUpdateClientDto) {
-		await this.safeUpdate({ id, userId }, dto)
+		await this.safeUpdate({ id, userId, status: { not: 'DELETED' } }, dto)
 
 		return { success: true }
 	}
 
 	async archive(userId: string, id: string) {
-		await this.safeUpdate(
-			{ id, userId },
-			{
-				archivedAt: new Date()
-			}
-		)
-
-		return { success: true }
+		return this.changeStatus(id, userId, 'ARCHIVED')
 	}
 
 	async unArchive(userId: string, id: string) {
-		await this.safeUpdate(
-			{ id, userId },
-			{
-				archivedAt: null
-			}
-		)
-
-		return { success: true }
+		return this.changeStatus(id, userId, 'ACTIVE')
 	}
 
 	async ban(userId: string, id: string, reason: string) {
-		await this.safeUpdate(
-			{ id, userId, anonymizedAt: null },
-			{
-				bannedAt: new Date(),
-				bannedReason: reason
-			}
-		)
-
-		return { success: true }
+		return this.changeStatus(id, userId, 'BANNED')
 	}
 
 	async unBan(userId: string, id: string) {
-		await this.safeUpdate(
-			{ id, userId },
-			{
-				bannedAt: null,
-				bannedReason: null
-			}
-		)
-
-		return { success: true }
+		return this.changeStatus(id, userId, 'ACTIVE')
 	}
 
 	async removeClientData(userId: string, id: string) {
 		await this.safeUpdate(
-			{ id, userId, anonymizedAt: null },
+			{ id, userId },
 			{
-				anonymizedAt: new Date(),
-				archivedAt: new Date(),
+				status: 'DELETED',
+				statusChangedAt: new Date(),
 				name: 'Deleted',
 				phone: null,
 				description: null
@@ -191,5 +168,17 @@ export class ClientService {
 		if (result.count === 0) {
 			throw new NotFoundException('Client not found')
 		}
+	}
+
+	private async changeStatus(id: string, userId: string, nextStatus: ClientStatus) {
+		await this.safeUpdate(
+			{ id, userId, status: { not: 'DELETED' } },
+			{
+				status: nextStatus,
+				statusChangedAt: new Date()
+			}
+		)
+
+		return { success: true }
 	}
 }

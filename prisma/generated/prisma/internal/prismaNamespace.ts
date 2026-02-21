@@ -877,10 +877,8 @@ export const ClientScalarFieldEnum = {
   name: 'name',
   phone: 'phone',
   description: 'description',
-  archivedAt: 'archivedAt',
-  bannedAt: 'bannedAt',
-  bannedReason: 'bannedReason',
-  anonymizedAt: 'anonymizedAt',
+  status: 'status',
+  statusChangedAt: 'statusChangedAt',
   userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -972,6 +970,20 @@ export type EnumSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'SessionStatus[]'
  */
 export type ListEnumSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ClientStatus'
+ */
+export type EnumClientStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ClientStatus[]'
+ */
+export type ListEnumClientStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientStatus[]'>
     
 
 

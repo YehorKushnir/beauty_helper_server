@@ -29,10 +29,8 @@ export type ClientMinAggregateOutputType = {
   name: string | null
   phone: string | null
   description: string | null
-  archivedAt: Date | null
-  bannedAt: Date | null
-  bannedReason: string | null
-  anonymizedAt: Date | null
+  status: $Enums.ClientStatus | null
+  statusChangedAt: Date | null
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -43,10 +41,8 @@ export type ClientMaxAggregateOutputType = {
   name: string | null
   phone: string | null
   description: string | null
-  archivedAt: Date | null
-  bannedAt: Date | null
-  bannedReason: string | null
-  anonymizedAt: Date | null
+  status: $Enums.ClientStatus | null
+  statusChangedAt: Date | null
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,10 +53,8 @@ export type ClientCountAggregateOutputType = {
   name: number
   phone: number
   description: number
-  archivedAt: number
-  bannedAt: number
-  bannedReason: number
-  anonymizedAt: number
+  status: number
+  statusChangedAt: number
   userId: number
   createdAt: number
   updatedAt: number
@@ -73,10 +67,8 @@ export type ClientMinAggregateInputType = {
   name?: true
   phone?: true
   description?: true
-  archivedAt?: true
-  bannedAt?: true
-  bannedReason?: true
-  anonymizedAt?: true
+  status?: true
+  statusChangedAt?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -87,10 +79,8 @@ export type ClientMaxAggregateInputType = {
   name?: true
   phone?: true
   description?: true
-  archivedAt?: true
-  bannedAt?: true
-  bannedReason?: true
-  anonymizedAt?: true
+  status?: true
+  statusChangedAt?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -101,10 +91,8 @@ export type ClientCountAggregateInputType = {
   name?: true
   phone?: true
   description?: true
-  archivedAt?: true
-  bannedAt?: true
-  bannedReason?: true
-  anonymizedAt?: true
+  status?: true
+  statusChangedAt?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -188,10 +176,8 @@ export type ClientGroupByOutputType = {
   name: string
   phone: string | null
   description: string | null
-  archivedAt: Date | null
-  bannedAt: Date | null
-  bannedReason: string | null
-  anonymizedAt: Date | null
+  status: $Enums.ClientStatus
+  statusChangedAt: Date
   userId: string
   createdAt: Date
   updatedAt: Date
@@ -223,10 +209,8 @@ export type ClientWhereInput = {
   name?: Prisma.StringFilter<"Client"> | string
   phone?: Prisma.StringNullableFilter<"Client"> | string | null
   description?: Prisma.StringNullableFilter<"Client"> | string | null
-  archivedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
-  bannedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
-  bannedReason?: Prisma.StringNullableFilter<"Client"> | string | null
-  anonymizedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
+  status?: Prisma.EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   userId?: Prisma.StringFilter<"Client"> | string
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
@@ -238,10 +222,8 @@ export type ClientOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  bannedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  bannedReason?: Prisma.SortOrderInput | Prisma.SortOrder
-  anonymizedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusChangedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -256,10 +238,8 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Client"> | string
   phone?: Prisma.StringNullableFilter<"Client"> | string | null
   description?: Prisma.StringNullableFilter<"Client"> | string | null
-  archivedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
-  bannedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
-  bannedReason?: Prisma.StringNullableFilter<"Client"> | string | null
-  anonymizedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
+  status?: Prisma.EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   userId?: Prisma.StringFilter<"Client"> | string
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
@@ -271,10 +251,8 @@ export type ClientOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  bannedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  bannedReason?: Prisma.SortOrderInput | Prisma.SortOrder
-  anonymizedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusChangedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -291,10 +269,8 @@ export type ClientScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Client"> | string
   phone?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
-  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
-  bannedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
-  bannedReason?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
-  anonymizedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
+  status?: Prisma.EnumClientStatusWithAggregatesFilter<"Client"> | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeWithAggregatesFilter<"Client"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"Client"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Client"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Client"> | Date | string
@@ -305,10 +281,8 @@ export type ClientCreateInput = {
   name: string
   phone?: string | null
   description?: string | null
-  archivedAt?: Date | string | null
-  bannedAt?: Date | string | null
-  bannedReason?: string | null
-  anonymizedAt?: Date | string | null
+  status?: $Enums.ClientStatus
+  statusChangedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClientInput
@@ -319,10 +293,8 @@ export type ClientUncheckedCreateInput = {
   name: string
   phone?: string | null
   description?: string | null
-  archivedAt?: Date | string | null
-  bannedAt?: Date | string | null
-  bannedReason?: string | null
-  anonymizedAt?: Date | string | null
+  status?: $Enums.ClientStatus
+  statusChangedAt?: Date | string
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -333,10 +305,8 @@ export type ClientUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
@@ -347,10 +317,8 @@ export type ClientUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -361,10 +329,8 @@ export type ClientCreateManyInput = {
   name: string
   phone?: string | null
   description?: string | null
-  archivedAt?: Date | string | null
-  bannedAt?: Date | string | null
-  bannedReason?: string | null
-  anonymizedAt?: Date | string | null
+  status?: $Enums.ClientStatus
+  statusChangedAt?: Date | string
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -375,10 +341,8 @@ export type ClientUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -388,10 +352,8 @@ export type ClientUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -412,10 +374,8 @@ export type ClientCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  archivedAt?: Prisma.SortOrder
-  bannedAt?: Prisma.SortOrder
-  bannedReason?: Prisma.SortOrder
-  anonymizedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusChangedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -426,10 +386,8 @@ export type ClientMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  archivedAt?: Prisma.SortOrder
-  bannedAt?: Prisma.SortOrder
-  bannedReason?: Prisma.SortOrder
-  anonymizedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusChangedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -440,10 +398,8 @@ export type ClientMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  archivedAt?: Prisma.SortOrder
-  bannedAt?: Prisma.SortOrder
-  bannedReason?: Prisma.SortOrder
-  anonymizedAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  statusChangedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -491,15 +447,17 @@ export type ClientUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.ClientScalarWhereInput | Prisma.ClientScalarWhereInput[]
 }
 
+export type EnumClientStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ClientStatus
+}
+
 export type ClientCreateWithoutUserInput = {
   id?: string
   name: string
   phone?: string | null
   description?: string | null
-  archivedAt?: Date | string | null
-  bannedAt?: Date | string | null
-  bannedReason?: string | null
-  anonymizedAt?: Date | string | null
+  status?: $Enums.ClientStatus
+  statusChangedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -509,10 +467,8 @@ export type ClientUncheckedCreateWithoutUserInput = {
   name: string
   phone?: string | null
   description?: string | null
-  archivedAt?: Date | string | null
-  bannedAt?: Date | string | null
-  bannedReason?: string | null
-  anonymizedAt?: Date | string | null
+  status?: $Enums.ClientStatus
+  statusChangedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -551,10 +507,8 @@ export type ClientScalarWhereInput = {
   name?: Prisma.StringFilter<"Client"> | string
   phone?: Prisma.StringNullableFilter<"Client"> | string | null
   description?: Prisma.StringNullableFilter<"Client"> | string | null
-  archivedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
-  bannedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
-  bannedReason?: Prisma.StringNullableFilter<"Client"> | string | null
-  anonymizedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
+  status?: Prisma.EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   userId?: Prisma.StringFilter<"Client"> | string
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Client"> | Date | string
@@ -565,10 +519,8 @@ export type ClientCreateManyUserInput = {
   name: string
   phone?: string | null
   description?: string | null
-  archivedAt?: Date | string | null
-  bannedAt?: Date | string | null
-  bannedReason?: string | null
-  anonymizedAt?: Date | string | null
+  status?: $Enums.ClientStatus
+  statusChangedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -578,10 +530,8 @@ export type ClientUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -591,10 +541,8 @@ export type ClientUncheckedUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -604,10 +552,8 @@ export type ClientUncheckedUpdateManyWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  bannedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+  statusChangedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -619,10 +565,8 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name?: boolean
   phone?: boolean
   description?: boolean
-  archivedAt?: boolean
-  bannedAt?: boolean
-  bannedReason?: boolean
-  anonymizedAt?: boolean
+  status?: boolean
+  statusChangedAt?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -634,10 +578,8 @@ export type ClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   name?: boolean
   phone?: boolean
   description?: boolean
-  archivedAt?: boolean
-  bannedAt?: boolean
-  bannedReason?: boolean
-  anonymizedAt?: boolean
+  status?: boolean
+  statusChangedAt?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -649,10 +591,8 @@ export type ClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   name?: boolean
   phone?: boolean
   description?: boolean
-  archivedAt?: boolean
-  bannedAt?: boolean
-  bannedReason?: boolean
-  anonymizedAt?: boolean
+  status?: boolean
+  statusChangedAt?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -664,16 +604,14 @@ export type ClientSelectScalar = {
   name?: boolean
   phone?: boolean
   description?: boolean
-  archivedAt?: boolean
-  bannedAt?: boolean
-  bannedReason?: boolean
-  anonymizedAt?: boolean
+  status?: boolean
+  statusChangedAt?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "description" | "archivedAt" | "bannedAt" | "bannedReason" | "anonymizedAt" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
+export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "description" | "status" | "statusChangedAt" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
 export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -694,10 +632,8 @@ export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     name: string
     phone: string | null
     description: string | null
-    archivedAt: Date | null
-    bannedAt: Date | null
-    bannedReason: string | null
-    anonymizedAt: Date | null
+    status: $Enums.ClientStatus
+    statusChangedAt: Date
     userId: string
     createdAt: Date
     updatedAt: Date
@@ -1129,10 +1065,8 @@ export interface ClientFieldRefs {
   readonly name: Prisma.FieldRef<"Client", 'String'>
   readonly phone: Prisma.FieldRef<"Client", 'String'>
   readonly description: Prisma.FieldRef<"Client", 'String'>
-  readonly archivedAt: Prisma.FieldRef<"Client", 'DateTime'>
-  readonly bannedAt: Prisma.FieldRef<"Client", 'DateTime'>
-  readonly bannedReason: Prisma.FieldRef<"Client", 'String'>
-  readonly anonymizedAt: Prisma.FieldRef<"Client", 'DateTime'>
+  readonly status: Prisma.FieldRef<"Client", 'ClientStatus'>
+  readonly statusChangedAt: Prisma.FieldRef<"Client", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Client", 'String'>
   readonly createdAt: Prisma.FieldRef<"Client", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Client", 'DateTime'>

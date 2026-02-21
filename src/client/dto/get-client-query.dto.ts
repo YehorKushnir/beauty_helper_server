@@ -1,5 +1,6 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 import { Type } from 'class-transformer'
+import { ClientStatus } from '../../../prisma/generated/prisma/enums'
 
 export class GetClientsQueryDto {
 	@IsOptional()
@@ -7,9 +8,8 @@ export class GetClientsQueryDto {
 	search?: string
 
 	@IsOptional()
-	@IsBoolean()
-	@Type(() => Boolean)
-	archived?: boolean
+	@IsString()
+	status?: ClientStatus
 
 	@IsOptional()
 	@Type(() => Number)

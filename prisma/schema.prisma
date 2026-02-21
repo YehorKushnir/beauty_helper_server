@@ -86,16 +86,20 @@ model Session {
   @@index([userId, status])
 }
 
-model Client {
-  id          String  @id @default(uuid())
-  name        String
-  phone       String?
-  description String?
+enum ClientStatus {
+  ACTIVE
+  BANNED
+  ARCHIVED
+  DELETED
+}
 
-  archivedAt   DateTime?
-  bannedAt     DateTime?
-  bannedReason String?
-  anonymizedAt DateTime?
+model Client {
+  id              String       @id @default(uuid())
+  name            String
+  phone           String?
+  description     String?
+  status          ClientStatus @default(ACTIVE)
+  statusChangedAt DateTime     @default(now())
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -103,7 +107,8 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId, phone])
+  @@index([userId, status])
   @@index([userId, name])
-  @@index([userId, archivedAt])
+  @@index([userId, phone])
+  @@index([userId, createdAt])
 }
