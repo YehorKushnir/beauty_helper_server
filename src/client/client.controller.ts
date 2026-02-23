@@ -48,12 +48,8 @@ export class ClientController {
 	}
 
 	@Patch('ban/:id')
-	async ban(
-		@CurrentUser() user: RequestUser,
-		@Param('id') id: string,
-		@Body() body: { reason: string }
-	) {
-		return this.clientService.ban(user.sub, id, body.reason)
+	async ban(@CurrentUser() user: RequestUser, @Param('id') id: string) {
+		return this.clientService.ban(user.sub, id)
 	}
 
 	@Patch('unban/:id')

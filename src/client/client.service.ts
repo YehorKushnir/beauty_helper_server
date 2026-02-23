@@ -39,7 +39,7 @@ export class ClientService {
 
 		const where = {
 			userId,
-			status: query.status ?? { not: 'DELETED' as const },
+			status: query.status ? query.status : { not: 'DELETED' as const },
 			...(query.search
 				? {
 						OR: [
@@ -117,7 +117,7 @@ export class ClientService {
 		return this.changeStatus(id, userId, 'ACTIVE')
 	}
 
-	async ban(userId: string, id: string, reason: string) {
+	async ban(userId: string, id: string) {
 		return this.changeStatus(id, userId, 'BANNED')
 	}
 
