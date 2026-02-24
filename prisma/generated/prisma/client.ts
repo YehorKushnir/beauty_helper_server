@@ -62,3 +62,33 @@ export type Session = Prisma.SessionModel
  * 
  */
 export type Client = Prisma.ClientModel
+/**
+ * Model Service
+ * 
+ */
+export type Service = Prisma.ServiceModel
+/**
+ * Model Appointment
+ * 
+ */
+export type Appointment = Prisma.AppointmentModel
+/**
+ * Model AppointmentServiceItem
+ * 
+ */
+export type AppointmentServiceItem = Prisma.AppointmentServiceItemModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model FinanceCategory
+ * 
+ */
+export type FinanceCategory = Prisma.FinanceCategoryModel
+/**
+ * Model Transaction
+ * 
+ */
+export type Transaction = Prisma.TransactionModel

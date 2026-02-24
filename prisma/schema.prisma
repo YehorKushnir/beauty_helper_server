@@ -20,6 +20,47 @@ enum SessionStatus {
   revoked
 }
 
+enum ClientStatus {
+  ACTIVE
+  BANNED
+  ARCHIVED
+  DELETED
+}
+
+enum ServiceStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum Currency {
+  EUR
+  UAH
+}
+
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -27,12 +68,18 @@ model User {
   email        String   @unique
   passwordHash String?
   role         UserRole @default(user)
+  currency     Currency @default(EUR)
 
   sessions           Session[]
   providers          AuthProvider[]
   oauthConnectTokens OAuthConnectToken[]
 
-  client Client[]
+  clients           Client[]
+  services          Service[]
+  appointments      Appointment[]
+  payments          Payment[]
+  financeCategories FinanceCategory[]
+  transactions      Transaction[]
 
   createdAt DateTime @default(now())
 }
@@ -86,23 +133,18 @@ model Session {
   @@index([userId, status])
 }
 
-enum ClientStatus {
-  ACTIVE
-  BANNED
-  ARCHIVED
-  DELETED
-}
-
 model Client {
   id              String       @id @default(uuid())
   name            String
   phone           String?
   description     String?
   status          ClientStatus @default(ACTIVE)
-  statusChangedAt DateTime     @default(now())
+  statusChangedAt DateTime?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  appointments Appointment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,4 +153,129 @@ model Client {
   @@index([userId, name])
   @@index([userId, phone])
   @@index([userId, createdAt])
+}
+
+model Service {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  durationMin Int
+  price       Decimal
+  currency    Currency      @default(EUR)
+  status      ServiceStatus @default(ACTIVE)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items AppointmentServiceItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, name])
+  @@index([userId, createdAt])
+}
+
+model Appointment {
+  id            String            @id @default(uuid())
+  startAt       DateTime
+  endAt         DateTime?
+  status        AppointmentStatus @default(SCHEDULED)
+  totalAmount   Decimal?
+  currency      Currency          @default(EUR)
+  paymentStatus PaymentStatus     @default(PENDING)
+
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  items    AppointmentServiceItem[]
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, startAt])
+  @@index([userId, paymentStatus])
+}
+
+model AppointmentServiceItem {
+  id       String   @id @default(uuid())
+  name     String
+  quantity Int      @default(1)
+  price    Decimal
+  total    Decimal
+  currency Currency @default(EUR)
+
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  serviceId     String?
+  service       Service?    @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([appointmentId])
+}
+
+model Payment {
+  id       String        @id @default(uuid())
+  amount   Decimal
+  currency Currency      @default(EUR)
+  method   PaymentMethod
+  paidAt   DateTime      @default(now())
+  status   PaymentStatus @default(PENDING)
+
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  transaction Transaction?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, paidAt])
+}
+
+model FinanceCategory {
+  id   String          @id @default(uuid())
+  type TransactionType
+  name String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  @@unique([userId, type, name])
+}
+
+model Transaction {
+  id         String          @id @default(uuid())
+  type       TransactionType
+  amount     Decimal
+  currency   Currency        @default(EUR)
+  occurredAt DateTime
+  note       String?
+
+  appointmentId String?
+
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String?
+  category   FinanceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  paymentId  String?          @unique
+  payment    Payment?         @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, occurredAt])
+  @@index([userId, type])
+  @@index([appointmentId])
 }

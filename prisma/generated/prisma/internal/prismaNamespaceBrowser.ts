@@ -55,7 +55,13 @@ export const ModelName = {
   AuthProvider: 'AuthProvider',
   OAuthConnectToken: 'OAuthConnectToken',
   Session: 'Session',
-  Client: 'Client'
+  Client: 'Client',
+  Service: 'Service',
+  Appointment: 'Appointment',
+  AppointmentServiceItem: 'AppointmentServiceItem',
+  Payment: 'Payment',
+  FinanceCategory: 'FinanceCategory',
+  Transaction: 'Transaction'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -81,6 +87,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   role: 'role',
+  currency: 'currency',
   createdAt: 'createdAt'
 } as const
 
@@ -142,6 +149,99 @@ export const ClientScalarFieldEnum = {
 } as const
 
 export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
+
+
+export const ServiceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  durationMin: 'durationMin',
+  price: 'price',
+  currency: 'currency',
+  status: 'status',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const AppointmentScalarFieldEnum = {
+  id: 'id',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  currency: 'currency',
+  paymentStatus: 'paymentStatus',
+  userId: 'userId',
+  clientId: 'clientId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
+
+
+export const AppointmentServiceItemScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  quantity: 'quantity',
+  price: 'price',
+  total: 'total',
+  currency: 'currency',
+  appointmentId: 'appointmentId',
+  serviceId: 'serviceId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppointmentServiceItemScalarFieldEnum = (typeof AppointmentServiceItemScalarFieldEnum)[keyof typeof AppointmentServiceItemScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  currency: 'currency',
+  method: 'method',
+  paidAt: 'paidAt',
+  status: 'status',
+  userId: 'userId',
+  appointmentId: 'appointmentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const FinanceCategoryScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  name: 'name',
+  userId: 'userId'
+} as const
+
+export type FinanceCategoryScalarFieldEnum = (typeof FinanceCategoryScalarFieldEnum)[keyof typeof FinanceCategoryScalarFieldEnum]
+
+
+export const TransactionScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  amount: 'amount',
+  currency: 'currency',
+  occurredAt: 'occurredAt',
+  note: 'note',
+  appointmentId: 'appointmentId',
+  userId: 'userId',
+  categoryId: 'categoryId',
+  paymentId: 'paymentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
 
 
 export const SortOrder = {
