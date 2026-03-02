@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ClientService } from './client.service'
 import { CreateUpdateClientDto } from './dto/create-update-client.dto'
-import { CurrentUser, type RequestUser } from '../common/decorators/current-user.decorator'
+import { CurrentUser, type RequestUser } from '../../common/decorators/current-user.decorator'
 import { GetClientsQueryDto } from './dto/get-client-query.dto'
 
 @Controller('client')

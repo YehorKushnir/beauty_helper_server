@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
-import { AuthService } from '../../auth/auth.service'
-import { signAccess, verifyAccess } from '../../auth/access-jwt'
+import { AuthService } from '../../models/auth/auth.service'
+import { signAccess, verifyAccess } from '../../models/auth/access-jwt'
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator'
 import { Reflector } from '@nestjs/core'
 

@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from '../prisma/prisma.service'
-import { UserRole } from '../../prisma/generated/prisma/enums'
+import { PrismaService } from '../../infra/prisma/prisma.service'
+import { UserRole } from '../../../prisma/generated/prisma/enums'
 import * as argon2 from 'argon2'
 import sharp from 'sharp'
 import { fileTypeFromBuffer } from 'file-type'
-import { StorageService } from '../storage/storage.service'
+import { StorageService } from '../../infra/storage/storage.service'
 
 @Injectable()
 export class UserService {

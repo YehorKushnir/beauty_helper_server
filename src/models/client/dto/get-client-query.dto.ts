@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator'
 import { Type } from 'class-transformer'
-import { ClientStatus } from '../../../prisma/generated/prisma/enums'
+import { ClientStatus } from '../../../../prisma/generated/prisma/enums'
 
 export class GetClientsQueryDto {
 	@IsOptional()

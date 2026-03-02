@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator'
-import { Match } from '../../common/validators/match.validator'
+import { Match } from '../../../common/validators/match.validator'
 
 export class RegisterDto {
 	@IsString()

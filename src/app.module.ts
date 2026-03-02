@@ -1,14 +1,14 @@
-import {Module} from '@nestjs/common'
-import {ConfigModule} from '@nestjs/config'
-import {PrismaModule} from './prisma/prisma.module'
-import {AuthModule} from './auth/auth.module'
-import {UserModule} from './user/user.module'
-import {SilentAuthGuard} from './common/guards/silent-auth.guard'
-import {RolesGuard} from './common/guards/roles.guard'
-import {StorageModule} from './storage/storage.module';
-import {PassportModule} from "@nestjs/passport";
-import {GoogleStrategy} from "./auth/strategies/google.strategy";
-import { ClientModule } from './client/client.module';
+import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import { PrismaModule } from './infra/prisma/prisma.module'
+import { AuthModule } from './models/auth/auth.module'
+import { UserModule } from './models/user/user.module'
+import { SilentAuthGuard } from './common/guards/silent-auth.guard'
+import { RolesGuard } from './common/guards/roles.guard'
+import { StorageModule } from './infra/storage/storage.module'
+import { PassportModule } from '@nestjs/passport'
+import { GoogleStrategy } from './models/auth/strategies/google.strategy'
+import { ClientModule } from './models/client/client.module'
 
 @Module({
 	imports: [
@@ -20,9 +20,9 @@ import { ClientModule } from './client/client.module';
 		UserModule,
 		StorageModule,
 		PassportModule.register({
-			session: false, // 🔴 ВАЖНО: у тебя НЕ session-based auth
+			session: false // 🔴 ВАЖНО: у тебя НЕ session-based auth
 		}),
-		ClientModule,
+		ClientModule
 	],
 	providers: [GoogleStrategy, SilentAuthGuard, RolesGuard]
 })

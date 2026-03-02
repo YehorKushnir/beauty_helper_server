@@ -9,8 +9,8 @@ import {
 	UseInterceptors
 } from '@nestjs/common'
 import { AuthService } from '../auth/auth.service'
-import type { RequestUser } from '../common/decorators/current-user.decorator'
-import { CurrentUser } from '../common/decorators/current-user.decorator'
+import type { RequestUser } from '../../common/decorators/current-user.decorator'
+import { CurrentUser } from '../../common/decorators/current-user.decorator'
 import { UserService } from './user.service'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { PasswordDto } from './dto/password.dto'
