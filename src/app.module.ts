@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport'
 import { GoogleStrategy } from './models/auth/strategies/google.strategy'
 import { ClientModule } from './models/client/client.module'
 import { ServiceModule } from './models/service/service.module'
+import { AppointmentModule } from './models/appointment/appointment.module'
 
 @Module({
 	imports: [
@@ -21,10 +22,11 @@ import { ServiceModule } from './models/service/service.module'
 		UserModule,
 		StorageModule,
 		PassportModule.register({
-			session: false // 🔴 ВАЖНО: у тебя НЕ session-based auth
+			session: false
 		}),
 		ClientModule,
-		ServiceModule
+		ServiceModule,
+		AppointmentModule
 	],
 	providers: [GoogleStrategy, SilentAuthGuard, RolesGuard]
 })
