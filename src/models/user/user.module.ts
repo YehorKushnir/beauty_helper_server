@@ -5,9 +5,9 @@ import { AuthModule } from '../auth/auth.module'
 import { StorageModule } from '../../infra/storage/storage.module'
 
 @Module({
-	imports: [forwardRef(() => AuthModule), StorageModule],
-	controllers: [UserController],
-	providers: [UserService],
-	exports: [UserService]
+  imports: [forwardRef(() => AuthModule), StorageModule],
+  controllers: [UserController],
+  providers: [UserService],
+  exports: [UserService]
 })
 export class UserModule {}

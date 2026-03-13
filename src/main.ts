@@ -7,26 +7,26 @@ import { RolesGuard } from './common/guards/roles.guard'
 import * as express from 'express'
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule)
 
-	app.enableCors({
-		origin: process.env.CLIENT_ORIGIN,
-		credentials: true
-	})
+  app.enableCors({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true
+  })
 
-	app.use(cookieParser())
+  app.use(cookieParser())
 
-	app.useGlobalGuards(app.get(SilentAuthGuard), app.get(RolesGuard))
+  app.useGlobalGuards(app.get(SilentAuthGuard), app.get(RolesGuard))
 
-	app.useGlobalPipes(
-		new ValidationPipe({
-			transform: true,
-			whitelist: true
-		})
-	)
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true
+    })
+  )
 
-	app.use('/uploads', express.static('uploads'))
+  app.use('/uploads', express.static('uploads'))
 
-	await app.listen(process.env.PORT as string)
+  await app.listen(process.env.PORT as string)
 }
 void bootstrap()

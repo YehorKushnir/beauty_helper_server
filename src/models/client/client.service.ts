@@ -6,179 +6,179 @@ import { ClientStatus, Prisma } from '../../../prisma/generated/prisma/client'
 
 @Injectable()
 export class ClientService {
-	constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-	async findByQuery(userId: string, query: string) {
-		return this.prisma.client.findMany({
-			where: {
-				userId,
-				status: 'ACTIVE',
-				...(query
-					? {
-							OR: [
-								{ name: { contains: query, mode: 'insensitive' } },
-								{ phone: { contains: query } }
-							]
-						}
-					: {})
-			},
-			select: {
-				id: true,
-				name: true,
-				phone: true
-			},
-			take: 20,
-			orderBy: { createdAt: 'desc' }
-		})
-	}
+  async findByQuery(userId: string, query: string) {
+    return this.prisma.client.findMany({
+      where: {
+        userId,
+        status: 'ACTIVE',
+        ...(query
+          ? {
+              OR: [
+                { name: { contains: query, mode: 'insensitive' } },
+                { phone: { contains: query } }
+              ]
+            }
+          : {})
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true
+      },
+      take: 20,
+      orderBy: { createdAt: 'desc' }
+    })
+  }
 
-	async findForTable(userId: string, query: GetClientsQueryDto) {
-		const page = query.page ?? 1
-		const limit = Math.min(query.limit ?? 20, 100)
-		const skip = (page - 1) * limit
+  async findForTable(userId: string, query: GetClientsQueryDto) {
+    const page = query.page ?? 1
+    const limit = Math.min(query.limit ?? 20, 100)
+    const skip = (page - 1) * limit
 
-		const where = {
-			userId,
-			status: query.status ? query.status : { not: 'DELETED' as const },
-			...(query.search
-				? {
-						OR: [
-							{ name: { contains: query.search, mode: 'insensitive' as const } },
-							{ phone: { contains: query.search } },
-							{
-								description: {
-									contains: query.search,
-									mode: 'insensitive' as const
-								}
-							}
-						]
-					}
-				: {})
-		}
+    const where = {
+      userId,
+      status: query.status ? query.status : { not: 'DELETED' as const },
+      ...(query.search
+        ? {
+            OR: [
+              { name: { contains: query.search, mode: 'insensitive' as const } },
+              { phone: { contains: query.search } },
+              {
+                description: {
+                  contains: query.search,
+                  mode: 'insensitive' as const
+                }
+              }
+            ]
+          }
+        : {})
+    }
 
-		const [items, total] = await this.prisma.$transaction([
-			this.prisma.client.findMany({
-				where,
-				skip,
-				take: limit,
-				orderBy: { createdAt: 'desc' },
-				select: {
-					id: true,
-					name: true,
-					phone: true,
-					description: true,
-					status: true,
-					statusChangedAt: true,
-					createdAt: true
-				}
-			}),
-			this.prisma.client.count({ where })
-		])
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.client.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          phone: true,
+          description: true,
+          status: true,
+          statusChangedAt: true,
+          createdAt: true
+        }
+      }),
+      this.prisma.client.count({ where })
+    ])
 
-		return {
-			items,
-			total,
-			page,
-			pages: Math.ceil(total / limit)
-		}
-	}
+    return {
+      items,
+      total,
+      page,
+      pages: Math.ceil(total / limit)
+    }
+  }
 
-	async findOne(userId: string, id: string) {
-		const client = await this.prisma.client.findFirst({
-			where: { id, userId }
-		})
+  async findOne(userId: string, id: string) {
+    const client = await this.prisma.client.findFirst({
+      where: { id, userId }
+    })
 
-		if (!client) {
-			throw new NotFoundException('Client not found')
-		}
+    if (!client) {
+      throw new NotFoundException('Client not found')
+    }
 
-		return client
-	}
+    return client
+  }
 
-	async create(userId: string, dto: CreateUpdateClientDto) {
-		await this.prisma.client.create({
-			data: { ...dto, userId }
-		})
+  async create(userId: string, dto: CreateUpdateClientDto) {
+    await this.prisma.client.create({
+      data: { ...dto, userId }
+    })
 
-		return { success: true }
-	}
+    return { success: true }
+  }
 
-	async update(userId: string, id: string, dto: CreateUpdateClientDto) {
-		await this.safeUpdate({ id, userId, status: { not: 'DELETED' } }, dto)
+  async update(userId: string, id: string, dto: CreateUpdateClientDto) {
+    await this.safeUpdate({ id, userId, status: { not: 'DELETED' } }, dto)
 
-		return { success: true }
-	}
+    return { success: true }
+  }
 
-	async archive(userId: string, id: string) {
-		return this.changeStatus(id, userId, 'ARCHIVED')
-	}
+  async archive(userId: string, id: string) {
+    return this.changeStatus(id, userId, 'ARCHIVED')
+  }
 
-	async unArchive(userId: string, id: string) {
-		return this.changeStatus(id, userId, 'ACTIVE')
-	}
+  async unArchive(userId: string, id: string) {
+    return this.changeStatus(id, userId, 'ACTIVE')
+  }
 
-	async ban(userId: string, id: string) {
-		return this.changeStatus(id, userId, 'BANNED')
-	}
+  async ban(userId: string, id: string) {
+    return this.changeStatus(id, userId, 'BANNED')
+  }
 
-	async unBan(userId: string, id: string) {
-		return this.changeStatus(id, userId, 'ACTIVE')
-	}
+  async unBan(userId: string, id: string) {
+    return this.changeStatus(id, userId, 'ACTIVE')
+  }
 
-	async removeClientData(userId: string, id: string) {
-		await this.safeUpdate(
-			{ id, userId },
-			{
-				status: 'DELETED',
-				statusChangedAt: new Date(),
-				name: 'Deleted',
-				phone: null,
-				description: null
-			}
-		)
+  async removeClientData(userId: string, id: string) {
+    await this.safeUpdate(
+      { id, userId },
+      {
+        status: 'DELETED',
+        statusChangedAt: new Date(),
+        name: 'Deleted',
+        phone: null,
+        description: null
+      }
+    )
 
-		return { success: true }
-	}
+    return { success: true }
+  }
 
-	async remove(userId: string, id: string) {
-		// const hasAppointments = await this.prisma.appointment.count({
-		// 	where: { clientId: id, userId }
-		// })
-		//
-		// if (hasAppointments > 0) {
-		// 	throw new BadRequestException('Cannot delete client with appointments')
-		// }
+  async remove(userId: string, id: string) {
+    // const hasAppointments = await this.prisma.appointment.count({
+    // 	where: { clientId: id, userId }
+    // })
+    //
+    // if (hasAppointments > 0) {
+    // 	throw new BadRequestException('Cannot delete client with appointments')
+    // }
 
-		const result = await this.prisma.client.deleteMany({
-			where: { id, userId }
-		})
+    const result = await this.prisma.client.deleteMany({
+      where: { id, userId }
+    })
 
-		if (result.count === 0) {
-			throw new NotFoundException('Client not found')
-		}
+    if (result.count === 0) {
+      throw new NotFoundException('Client not found')
+    }
 
-		return { success: true }
-	}
+    return { success: true }
+  }
 
-	private async safeUpdate(
-		where: Prisma.ClientWhereInput & { userId: string },
-		data: Prisma.ClientUpdateManyMutationInput
-	) {
-		const result = await this.prisma.client.updateMany({ where, data })
-		if (result.count === 0) {
-			throw new NotFoundException('Client not found')
-		}
-	}
+  private async safeUpdate(
+    where: Prisma.ClientWhereInput & { userId: string },
+    data: Prisma.ClientUpdateManyMutationInput
+  ) {
+    const result = await this.prisma.client.updateMany({ where, data })
+    if (result.count === 0) {
+      throw new NotFoundException('Client not found')
+    }
+  }
 
-	private async changeStatus(id: string, userId: string, nextStatus: ClientStatus) {
-		await this.safeUpdate(
-			{ id, userId, status: { not: 'DELETED' } },
-			{
-				status: nextStatus,
-				statusChangedAt: new Date()
-			}
-		)
+  private async changeStatus(id: string, userId: string, nextStatus: ClientStatus) {
+    await this.safeUpdate(
+      { id, userId, status: { not: 'DELETED' } },
+      {
+        status: nextStatus,
+        statusChangedAt: new Date()
+      }
+    )
 
-		return { success: true }
-	}
+    return { success: true }
+  }
 }

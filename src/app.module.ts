@@ -13,21 +13,21 @@ import { ServiceModule } from './models/service/service.module'
 import { AppointmentModule } from './models/appointment/appointment.module'
 
 @Module({
-	imports: [
-		ConfigModule.forRoot({
-			isGlobal: true
-		}),
-		PrismaModule,
-		AuthModule,
-		UserModule,
-		StorageModule,
-		PassportModule.register({
-			session: false
-		}),
-		ClientModule,
-		ServiceModule,
-		AppointmentModule
-	],
-	providers: [GoogleStrategy, SilentAuthGuard, RolesGuard]
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+    PrismaModule,
+    AuthModule,
+    UserModule,
+    StorageModule,
+    PassportModule.register({
+      session: false
+    }),
+    ClientModule,
+    ServiceModule,
+    AppointmentModule
+  ],
+  providers: [GoogleStrategy, SilentAuthGuard, RolesGuard]
 })
 export class AppModule {}

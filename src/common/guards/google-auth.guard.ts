@@ -5,20 +5,20 @@ import { signState } from '../../models/auth/oauth-state'
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard('google') {
-	constructor(private config: ConfigService) {
-		super()
-	}
+  constructor(private config: ConfigService) {
+    super()
+  }
 
-	getAuthenticateOptions(context: ExecutionContext) {
-		const request = context.switchToHttp().getRequest()
+  getAuthenticateOptions(context: ExecutionContext) {
+    const request = context.switchToHttp().getRequest()
 
-		const state = signState({
-			mode: request.query.mode,
-			token: request.query.token
-		})
+    const state = signState({
+      mode: request.query.mode,
+      token: request.query.token
+    })
 
-		return {
-			state
-		}
-	}
+    return {
+      state
+    }
+  }
 }
